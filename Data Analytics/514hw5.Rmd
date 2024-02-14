@@ -1,0 +1,160 @@
+---
+title: "Homework 5"
+author: "Your Name Here"
+date: "Due 4/20 11:59 pm"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+   echo = TRUE, 
+   fig.align = 'center' , 
+   out.width="80%"
+)
+```
+
+# Setup
+
+
+### Changing the author field and file name.
+
+* (a) Change the `author:` field on the Rmd document from Your Group Name Here to your group name.
+
+* (b) Rename this file to "hw5_YourNameHere.Rmd", where YourNameHere is changed to your name.
+
+# Cleanup 
+Once you are done with this setup, updating the author and date fields, **delete** the *Setup* and the *Cleanup* sections of this document! 
+
+### GRADING
+
+* Part I = 20 points;
+* Part II = 80 points;
+
+
+
+# Part I: Review of basic concepts in statistical learning (20 points)
+
+You will spend some time thinking of some real-life applications for statistical learning. 
+
+### Question 1. 
+Describe three real-life applications in which classification might be useful. Describe the response, as well as the predictors. Is the goal of each application inference or prediction? Explain your answer. 
+
+> Your answer here! 
+
+### Question 2. 
+Describe three real-life applications in which regression might be useful. Describe the response, as well as the predictors. Is the goal of each application inference or prediction? Explain your answer.
+
+> Your answer here! 
+
+### Question 3.
+Describe three real-life applications in which cluster analysis might be useful.
+
+> Your answer here! 
+
+  
+### Question 4. 
+What are the advantages and disadvantages of a very flexible (versus a less flexible) approach for regression or classification? Under what circumstances might a more flexible approach be preferred to a less flexible approach? When might a less flexible approach be preferred?
+
+> Your answer here! 
+
+# Part II: Multiple Linear Regression (80 points)
+
+Load the `Boston` data set
+
+```{r}
+# import packages
+library(MASS)
+library(MLmetrics)
+#load data
+data(Boston)
+```
+
+
+## Exploratory data analysis (10 points)
+
+* Check the number of observations and features using `dim`
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+* Check for missing values
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+* Check for duplicated values
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+* checking correlation between variables 
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+
+## Split data set into 80:20 train and test data with name `BostonTraining` and `BostonTesting` respectively (10 points)
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+
+## Subset Selection Linear Regression Model
+
+### Forward Stepwise (25 points)
+
+* Please construct a forward stepwise regression with `BostonTraining`.
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+* Use this model to predict `medv` in `BostonTesting` and calculate `MAE` and `MSE`.
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+### Backward Stepwise (25 points)
+
+* Please construct a backward stepwise regression with `BostonTraining`.
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+* Use this model to predict `medv` in `BostonTesting` and calculate `MAE` and `MSE`.
+
+```{r}
+# Your code here
+```
+
+> Your answer here
+
+## Model Assessment (10 points)
+
+Compare the forward and backward stepwise linear regression models. You can use plots, assessment measures ($R^2$, RSS, MAE, MSE,etc.) Which one is better? Explain your answer.
+
+> Your answer here
+

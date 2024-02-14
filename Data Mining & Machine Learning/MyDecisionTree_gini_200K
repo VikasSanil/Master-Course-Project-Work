@@ -1,0 +1,5 @@
+digraph Tree {
+node [shape=box, style="filled", color="black", fontname="helvetica"] ;
+edge [fontname="helvetica"] ;
+0 [label="gini = 0.475\nsamples = 150000\nvalue = [58282, 91718]\nclass = Short Term", fillcolor="#b7dbf6"] ;
+}

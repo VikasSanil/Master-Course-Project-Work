@@ -1,0 +1,205 @@
+---
+title: "HW3_Vikas Sanil"
+author: "Vikas Sanil"
+date: "Due Date 2/28"
+output:
+  pdf_document: default
+header-includes:
+- \usepackage{float}
+- \floatplacement{figure}{H}
+fig_cap: yes
+keep_tex: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,comment = '', fig.width = 5, fig.height = 3
+  )
+```
+
+##  Packages
+
+```{r message=FALSE}
+# add packages you need for this assignment
+library(tidyverse) 
+library(tigerstats)
+library(hexbin)
+```
+
+
+# Part ONE: Review the approach to location and scale problems for one and two populations (10 points, 5 points each question)
+
+
+* To find a confidence interval on population mean *when population variance is known*, which of the following should we use? 
+(In this part, suppose X_1, ... , X_1000 is a random sample (of size 1000) from some unknown distribution.)
+
+  A. The normal distribution (with the Z statistic)
+  
+  B. The normal distribution (with the Z statistic), but ONLY if X comes from a normal distribution
+  
+  C. The t-distribution (with the T statistic)
+  
+  D. The t-distribution (with the T statistic), but ONLY if X comes from a normal distribution 
+
+> **Answer:** A. The normal distribution (with the Z statistic)
+
+* To find a confidence interval on population mean *when population variance is unknown*, which of the following should we use? 
+(In this part, suppose X_1, ... , X_1000 is a random sample (of size 1000) from some unknown distribution.)
+
+  A. The normal distribution (with the Z statistic)
+  
+  B. The normal distribution (with the Z statistic), but ONLY if X comes from a normal distribution
+  
+  C. The t-distribution (with the T statistic)
+  
+  D. The t-distribution (with the T statistic), but ONLY if  X comes from a normal distribution
+
+> **Answer:** D. The t-distribution (with the T statistic), but ONLY if  X comes from a normal distribution
+
+
+
+# Part Two: Confidence Interval (20 points)
+
+**Problem 1.** An electrical firm manufactures light bulbs that have a length of life that is approximately normally distributed, with mean equal to 800 hours and a standard deviation of 40 hours. A random sample of 16 bulbs will have an average life of less than 775 hours. (10 points)
+
+a. Give a probabilistic result that indicates how rare an event $\bar{X} \leq 775$ is when $\mu= 800$. On the other hand, how rare would it be if $\mu$ truly were, say, 760 hours?
+
+```{r fig.pos= 'h'}
+nsize<-16
+xbar<-775
+mu1<-800
+std<-40
+mu2<-760
+standardDev<-std/sqrt(nsize)
+par(mfrow=c(1,2))
+p1<-pnormGC(xbar, region="below", mean = mu1, sd= standardDev, graph = TRUE )
+p2<-pnormGC(xbar, region="below", mean = mu2, sd= standardDev, graph = TRUE )
+```
+
+
+> **Answer:** 
+<p>- The probability of event $\bar{X} \leq 775$ when $\mu =800$ is `r p1`.<br>
+- The probability of event $\bar{X} \leq 775$ when $\mu =760$ is `r p2`.</p>
+  
+
+
+b. Please construct a 95% confidence interval on $\mu$ with $\bar{X} = 775$. Is 800 inside the interval?
+
+```{r}
+xbar<-775
+std<-40
+nsize<-16
+alpha<-.05
+loBound<-xbar - qnorm(1-alpha/2)*(std/sqrt(nsize))
+loBound
+upBound<-xbar + qnorm(1-alpha/2)*(std/sqrt(nsize))
+upBound
+```
+
+>**Answer:**
+<p> The 95% confidence interval on $\mu$ with $\bar{X} = 775$ falls between `r loBound` and `r upBound`. Hence 800 is outside the 95% confidence interval.</p>
+
+
+**Problem 2.** A maker of a certain brand of low-fat cereal bars claims that the average saturated fat content is 0.5 gram. In a random sample of 8 cereal bars of this brand, the saturated fat content was 0.6, 0.7, 0.7, 0.3, 0.4, 0.5, 0.4, and 0.2. *Assume a normal distribution*. (10 points)
+
+```{r}
+sampleCerealBars<-c(0.6, 0.7, 0.7, 0.3, 0.4, 0.5, 0.4,0.2)
+t.test(sampleCerealBars, conf.level = .95)
+```
+a. Please construct a 95% confidence interval on the average saturated fat content.
+
+>**Answer:** The 95% confidence interval on the average satuarted fat content is between 0.32182 gram and 0.62818 gram.  
+
+b. Would you agree with the claim? Justify your answer.   
+
+> **Answer:** The average stated is well within the confidence interval of the random sample tested and closer to the random sample average.But the sample size is too low. More random sample is required to confirm the claim.  
+
+
+\newpage
+
+# Part Three: Working With Data (65 points)
+
+### Instructions: Please review EDA Handout first. Import the needed packages first.
+
+* [Obtaining the adult dataset](http://archive.ics.uci.edu/ml/machine-learning-databases/adult/)
+
+### Tasks
+
+For the following exercises, work with the `adult.data` data set. Use either `Python` or `R` to solve each
+problem. Please read the `adult.name` file to understand each attribute.
+
+a. Import the `adult.data` data set and name it `adult`. (10 points)
+```{r}
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
+adult <- read.csv(url, strip.white = TRUE, header = FALSE)
+renameCol<-c("age", "Workclass", "fnlwgt", "education", "educationnum", "maritalstatus", "occupation", "relationship", "race", "sex", "capitalgain", "capitalloss", "hoursperweek", "nativecountry", "class")
+colnames(adult)<-renameCol
+```
+
+
+b. Standardize `hours-per-week` and indicate if there is any outlier (10 points)
+```{r}
+hoursPerWeek_z<-scale(adult$hoursperweek)
+hoursPerWeek_outliers<-adult[hoursPerWeek_z<-3|hoursPerWeek_z>3,]
+numHoursPerweekOutlier<-nrow(hoursPerWeek_outliers)
+```
+<br>
+
+> **Answer:** The number of outlier in adult dataset when 'hours-per-week' standardize is `r numHoursPerweekOutlier`.
+
+
+c. Show a bar graph of `race` with a response `class` overlay. What conclusion can you draw from the bar graph? (10 points)
+
+```{r fig.width=10, fig.pos= 'h'}
+ggplot(data=adult, aes(x = race))+
+  geom_bar(aes(fill= class))+
+  coord_flip()
+
+ggplot(data=adult, aes(x = race))+
+  geom_bar(aes(fill= class), position = "fill")+
+  coord_flip()
+```
+
+> **Answer:** Based on above plots we can conclude: 
+<p>- 'White' race is majority in both class - '<=50K' and '>50K' in the dataset. <br>
+- According to dataset, 'Asian-Pac-Islander' race has higher probability of gettign into '>50K' class as 'White' race. </p>
+
+d. Select any numeric attribute and show a histogram of it with a response `class` overlay. What conclusion can you draw from the histogram? (10 points)
+
+```{r fig.width=10, fig.align = 'center', fig.pos= 'h'}
+ggplot(data=adult, aes(x = age))+
+  geom_histogram(aes(fill= class), bins=10, color ="black")
+
+ggplot(data=adult, aes(x = age))+
+  geom_histogram(aes(fill= class), bins=10, color ="black", position="fill")
+```
+
+>**Answer:**Based on above plots we can conclude:
+<p>- Large number of adults are in <=50K class.<br>
+- Around age 50 the probability of being in '>50k' class is high.</p>
+
+e. Select any two attributes and show a plot, what conclusion can you draw from the plot? (10 points)
+
+```{r fig.width=10, fig.align = 'center', fig.pos= 'h'}
+ggplot(data=adult)+
+  geom_bin2d(mapping = aes( x= Workclass, y = age))
+```
+
+>**Answer:**Based on above plot we can conclude:
+<p>- More Adult join 'Private' work-class.<br>
+- Never-worked work-class has only younger adults.<br>
+- The Work-class related to Goverment(Local/State/Fedral) doesn't has older adult, which shows strict retirement policy.</p>
+
+f. Select any three attributes and plot their relationship using 2D scatter plot, use one of the selected attributes as the color code when plotting, what can you say about the correlation of these attributes?  What conclusion can
+you draw from the plot? (15 points)
+
+```{r fig.width=10, fig.align = 'center', fig.pos= 'h'}
+ggplot(data=adult, aes(x= hoursperweek, y= education  , colour=class))+
+  geom_point()
+```
+
+>**Answer:**Based on above plot we can conclude:
+<p>- Lower education level has very few >50k class.<br>
+- The number of '>50K' class is relatively higher for education levels like -Doctorate, Masters, Bachelor and Prof-School.</p>
+

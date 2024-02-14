@@ -1,0 +1,248 @@
+---
+title: "HW2_Vikas Sanil"
+author: "Vikas Sanil"
+date: "Due Date 2/9"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+header-includes:
+- \usepackage{float}
+- \floatplacement{figure}{H}
+fig_cap: yes
+keep_tex: yes
+---
+
+```{r message=FALSE}
+#Using tigerstats library for data.
+library(tigerstats) 
+```
+
+### 1. Changing the author field and file name. (5 points)
+
+##### (a) Change the `author:` field on the Rmd document from Your Name Here to your own name.
+
+##### (b) Rename this file to "HW2_YourHameHere.Rmd", where YourNameHere is changed to your own name.
+
+### 2. Measure of location and variability (20 points)
+
+A certain polymer is used for evacuation systems for aircraft. It is important that the polymer be resistant to the aging process. Twenty specimens of the polymer were used in an experiment. Ten were assigned randomly to be exposed to an accelerated batch aging process that involved exposure to high temperatures for 10 days. Measurements of tensile strength of
+the specimens were made, and the following data were
+recorded on tensile strength in psi:
+
+```
+No aging: 227 222 218 216 218 217 225 229 228 221
+Aging: 219 214 218 203 215 211 209 204 201 205 
+```
+
+```{r}
+# You can use the following code to create a data frame
+strength = c( 227 ,222, 218, 216, 218, 217, 225, 229, 228,221,219,214,218,203,215,211,209,204,201,205)
+aging<-as.factor(c(rep(0,10),rep(1,10)))
+polymerData<-data.frame(strength,aging)
+noAgingPolymerData<-polymerData$strength[polymerData$aging==0]
+agedPolymerData<-polymerData$strength[polymerData$aging==1]
+```
+
+#### (a) Calculate the sample mean tensile strength of the two samples. (5 points)
+
+```{r}
+meanOfNoAgingPolymer<-mean(noAgingPolymerData)
+meanOfAgingPolymer<-mean(agedPolymerData)
+```
+
+```{r}
+cat('The sample mean tensile strength of no aging polymer is ', meanOfNoAgingPolymer , fill = TRUE)
+cat('The sample mean tensile strength of aging polymer is ', meanOfAgingPolymer, fill = TRUE )
+```
+
+#### (b) Calculate the median for both. Discuss your observation with the mean and median of each group. (5 points) \newline
+
+
+```{r echo=TRUE}
+medianOfNoAgingPolymer<-median(noAgingPolymerData)
+medianOfAgingPolymer<-median(agedPolymerData)
+```
+
+```{r echo=TRUE, results='asis',}
+cat('For No aging polymer  median tensile strength of ', medianOfNoAgingPolymer, ', is **lower** than the mean tensile strength ', meanOfNoAgingPolymer, '. ', fill = TRUE)
+cat('For Aging polymer  median tensile strength of ', medianOfAgingPolymer, ', is **greater** than the mean tensile strength ', meanOfAgingPolymer,'.  ', fill = TRUE)
+```
+
+#### (c) Calculate the sample variance as well as standard deviation in tensile strength for both samples. (5 points)
+
+```{r}
+varOfNoAgingPolymer<-var(noAgingPolymerData)
+varOfAgingPolymer<-var(agedPolymerData)
+sdOfNoAgingPolymer<-sd(noAgingPolymerData)
+sdOfAgingPolymer<-sd(agedPolymerData)
+```
+```{r}
+cat('The sample variance tensile strength of no aging polymer is ', varOfNoAgingPolymer )
+cat('The sample deviation tensile strength of no aging polymer is ', sdOfNoAgingPolymer )
+cat('The sample variance tensile strength of aging polymer is ', varOfAgingPolymer )
+cat('The sample deviation tensile strength of aging polymer is ', sdOfAgingPolymer )
+```
+
+#### (d) Does there appear to be any evidence that aging affects the variability in tensile strength? (5 points)
+
+```{r}
+cat('With Aging we can see the tensile strength varies largely for the Polymer.')
+```
+
+<br> 
+
+### 3. Experiment of Tossing A Die (20 points)
+
+Suppose we have a fair die. Let $n = 10000$ be the number of tossing. 
+
+```{r,fig.width = 6, fig.height = 3}
+# To generate a fair die
+n <- 10000
+x <- c(1:6)
+DieToss <- sample(x, size=n, replace=TRUE)
+par(mfrow=c(1,2))
+barplot(table(DieToss))
+hist(DieToss)
+```
+
+#### (a) Modify the number of repetition to 10 times, 1000 times, and 100000 times in the handout2-2. Calculate the **mean** of the results instead of sum. (10 points)
+
+
+```{r}
+dieToss10<-sample(x, size=10, replace=TRUE)
+dieToss1000<-sample(x, size=1000, replace=TRUE)
+dieToss100000<-sample(x, size=100000, replace=TRUE)
+
+meanDieToss10<-mean(dieToss10)
+meanDieToss1000<-mean(dieToss1000)
+meanDieToss100000<-mean(dieToss100000)
+overAllMean<- mean(c(dieToss100000, dieToss1000, dieToss10))
+
+meanDieToss10
+meanDieToss1000
+meanDieToss100000
+overAllMean
+```
+
+
+#### (b) Save the results of each repetition and use `par` to display the histogram plot of each repetition. (10 points)
+
+
+```{r  out.width="75%", fig.align = 'center', fig.pos= 'h'}
+par(mfrow=c(1,3))
+hist(dieToss10)
+hist(dieToss1000)
+hist(dieToss100000)
+
+par(mfrow=c(1,3))
+barplot(table(dieToss10))
+barplot(table(dieToss1000))
+barplot(table(dieToss100000))
+```
+
+<br> 
+
+### 4.Normal Distribution with `pnorm` and `qnorm` (20 points)
+
+#### (a) Suppose $Z \sim \mathcal{N}(0,1)$, please use `pnormGC` to find $P(X \le -0.3)$, $P(X \ge 0.5)$, $P( -0.3\le X \le 0.5)$ (10 points)
+
+```{r  out.width="75%", fig.align = 'center', fig.pos= 'h'}
+par(mfrow=c(1,3))
+pnormGC((-0.3), region="below", graph=TRUE)
+pnormGC((0.5), region="above", graph=TRUE)
+pnormGC(c(-0.3,0.5), region="between", graph=TRUE)
+```
+
+#### (b) Please use `qnorm` to find the critical values $z_{0.025}$ and $z_{0.005}$. Which value is larger? Why? (10 points)
+
+```{r results='asis'}
+z0<-qnorm((1-0.025), mean = 0, sd=1)
+z0
+z1<-qnorm((1-0.005), mean = 0, sd=1)
+z1
+
+cat('The critical value of $z_{0.005}$ is greater than $z_{0.025}$ as it is away from the mean value compared to $z_{0.025}$. Below graphs demonstrates the same.')
+
+par(mfrow=c(1,2))
+pnormGC(z0, region="above", graph=TRUE)
+pnormGC(z1, region="above", graph=TRUE)
+
+```
+
+> Type your answer here
+
+### 5. Working With Data (35 points)
+
+* [Obtaining the wine quality  dataset](http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/)
+
+#### (a) Import the `winequality-red` data set and name it `winequalRed`. (5 points)
+
+```
+# here is a hint for the r version 
+# -- change these commands as needed and delete these comments before submitting your work -- 
+# if you downloaded the data set as a .csv file then you can read it in as follows: 
+# winequalRed <- read.csv("~/Documents/datasets/winequality-red.csv", sep=";")
+# To view the data set
+#   View(winequalRed)
+```
+
+
+```{r}
+winequalRed <- read.csv("~/datasets/winequality-red.csv", sep=";")
+```
+
+#### (b) Create a  table of the  `quality` and `alcohol` attributes from the `winequalRed` data set. (5 points)
+
+Do not save the output from the code.
+```
+# hint: if you have two data columns named X and Y in your data frame, you can use code like this to create  a ta?tabble: 
+table(my.data.set$X, my.data.set$Y)
+```
+
+```{r}
+table_QA<-table(winequalRed$alcohol, winequalRed$quality)
+names(dimnames(table_QA))<-c("Alcohol","Quality")
+```
+
+#### (c) Save the first twenty records of the `winequalRed` data set as their own data frame. (5 points)
+
+```{r}
+wineequalRed20RowDF<-winequalRed[1:20,]
+wineequalRed20RowDF
+```
+
+#### (d)  Save the `density` and `pH` records of the `winequalRed` data set as their own data frame. (5 points)
+
+```{r}
+dFDensityPH<-data.frame(winequalRed$density, winequalRed$pH)
+```
+
+#### (e) Separate the wine data into a low quality class (quality $\le 5$) and a high quality class (quality > 5), find the mean and standard deviation for the attributes `alcohol` for the two classes. Based on the statistical information, describe if there exists difference for `alcohol` between the low quality and high quality red wines. (10 points) \newline
+
+
+
+```{r results='asis'}
+lowQualWine<- subset(winequalRed,winequalRed$quality<6)
+highQualWine<- subset(winequalRed,winequalRed$quality>5)
+meanAlcoholLowQualWine<-mean(lowQualWine$alcohol)
+meanAlcoholHighQualWine<-mean(highQualWine$alcohol)
+cat('The mean alcohol level of high quality wine(',meanAlcoholHighQualWine,') is **greater** than low quality wine(',meanAlcoholLowQualWine,').')
+```
+
+
+
+
+#### (f) Use `barplot` to investigate `quality` attribute. Show your result. (5 points)
+
+```{r out.width="75%", fig.align = 'center', fig.pos= 'h', results='asis'}
+tableWineeQualRed<-table(winequalRed$quality)
+barplot(tableWineeQualRed,
+        main="Quality count of Red wine.",
+        xlab="Quality",
+        ylab="Count")
+        summary(winequalRed$quality)
+        
+cat('Winequality-red data set has most of the data with the Quality number 5 and 6. Thus the mean quality of data set is 5.636 and median of the data set is 6.')
+```
+

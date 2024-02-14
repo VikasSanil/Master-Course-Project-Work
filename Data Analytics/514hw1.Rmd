@@ -1,0 +1,144 @@
+---
+title: "514 Lab 1"
+author: "Sagi vijay Rama Raju"
+date: "Due Date 02/23"
+output: html_document
+---
+
+```{r message=FALSE}
+# If you don't already have the tidyverse library installed,
+# you will need to type install.packages("tidyverse") into the Console
+library(tidyverse) 
+
+```
+
+### 1. Changing the author field and file name. (10 points)
+
+##### (a) Change the `author:` field on the Rmd document from Your Name Here to your own name.
+
+##### (b) Rename this file to "HW1_YourHameHere.Rmd", where YourNameHere is changed to your own name.
+
+### 2.  Hello World! (10 points)
+
+Here's an R code chunk that prints the text 'Hello world!'.
+
+```{r}
+print("Hello world!")
+```
+
+#### (a) Modify the code chunk below to print your name
+```{r}
+print ("Sagi Vijay Rama Raju")
+```
+
+<br>
+
+### 3.  Creating a numeric vector (30 points)
+We just learned about the `c()` operator, which forms a vector from its arguments.  If we're trying to build a vector containing a sequence of numbers, there are several useful functions at our disposal.  These are the colon operator `:` and the sequence function `seq()`.
+
+##### `:` Colon operator: 
+```{r}
+1:10 # Numbers 1 to 10
+127:132 # Numbers 127 to 132
+```
+
+##### `seq` function: `seq(from, to, by)`
+```{r}
+seq(1,10,1) # Numbers 1 to 10
+seq(1,10,2) # Odd numbers from 1 to 10
+seq(2,10,2) # Even numbers from 2 to 10
+```
+
+> To learn more about a function, type `?functionname` into your console.  E.g., `?seq` pulls up a Help file with the R documentation for the `seq` function.
+
+#### (a) Use `:` to output the sequence of numbers from 3 to 12
+```{r}
+3:12
+```
+
+#### (b) Use `seq()` to output the sequence of numbers from 3 to 30 in increments of 3
+```{r}
+seq(3,30,3)
+```
+
+#### (c) Save the sequence from (a) as a variable `x`, and the sequence from (b) as a variable `y`.  Output their product `x*y`
+```{r}
+x<-3:12
+y<-seq(3,30,3)
+x*y
+
+```
+
+<br>
+
+### 4. Cars data (50 points)
+
+We'll look at data frame and plotting in much more detail in later classes.  For a previous of what's to come, here's a very basic example.
+
+For this example we'll use a very simple dataset.  The `cars` data comes with the default installation of R.  To see the first few columns of the data, just type `head(cars)`.
+
+```{r}
+head(cars)
+```
+
+#### (a) Calculate the average and standard deviation of `speed` 
+
+```{r}
+
+chev<- cars$speed
+print (mean(chev)) #mean of speed
+print(sd(chev)) #standard deviation rooot of S
+```
+
+
+
+<br> 
+
+#### (b) Calculate the average and standard deviation of `dist` 
+
+```{r}
+mar<- cars$dist # creating an object
+print (mean(mar)) #mean/average of the distance
+print (sd(mar)) #standard deviation of dist
+```
+J
+
+
+<br> 
+
+We can easily produce a histogram of stopping distance using the `qplot` function (built-in `tidyverse` package).
+
+```{r}
+qplot(cars$dist) # Histogram of stopping distance
+```
+
+How to change the number of bins?
+
+```{r}
+qplot(cars$dist,bins = 20)
+```
+
+#### (c)  Produce a histogram of speed using the `qplot` function with **5 bins**.
+
+```{r}
+qplot (cars$speed,bins = 5)
+```
+
+The `qplot(x,y,...)` function can also be used to plot a vector `y` against a vector `x`.  You can type `?qplot` into the Console to learn more about the basic qplot function. 
+
+#### (d) Use the `qplot(x,y)` function to create a scatterplot of dist against speed.
+
+```{r}
+qplot(cars$speed,cars$dist,
+      col="red",
+      main="Car Speed VS Dist",
+      xlab = "Car Speed",
+      ylab = "Car dist"
+      )
+```
+
+#### (e) Use the `boxplot` function to create a boxplot of speed.
+
+```{r}
+boxplot(cars$speed, horizontal = TRUE)
+```

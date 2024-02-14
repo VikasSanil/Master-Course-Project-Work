@@ -1,0 +1,5 @@
+digraph Tree {
+node [shape=box, style="filled", color="black", fontname="helvetica"] ;
+edge [fontname="helvetica"] ;
+0 [label="entropy = 0.859\nsamples = 18000\nvalue = [5086, 12914]\nclass = Short Term", fillcolor="#87c4ef"] ;
+}

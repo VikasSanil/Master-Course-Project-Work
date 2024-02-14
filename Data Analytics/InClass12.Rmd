@@ -1,0 +1,63 @@
+---
+title: "Inclass12"
+author: "Vikas"
+date: "4/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+require(ISLR)
+
+data(Auto)
+fitlm <- lm(mpg ~ horsepower, data=Auto)
+summary(fitlm)
+new <- data.frame(horsepower = 98)
+predict(fitlm, new)
+predict(fitlm, new, interval="confidence")
+predict(fitlm, new, interval="prediction")
+plot(Auto$horsepower, Auto$mpg)
+abline(fitlm, col="red")
+par(mfrow=c(2,2))
+plot(fitlm)
+
+fitlm1 <- lm(mpg ~ cylinders, data=Auto)
+summary(fitlm1)
+new <- data.frame(cylinders = 10)
+predict(fitlm1, new)
+predict(fitlm1, new, interval="confidence")
+predict(fitlm1, new, interval="prediction")
+plot(Auto$cylinders, Auto$mpg)
+abline(fitlm1, col="red")
+par(mfrow=c(2,2))
+plot(fitlm1)
+
+fitlm2 <- lm(mpg ~ cylinders, data=Auto)
+summary(fitlm2)
+new <- data.frame(cylinders = 10)
+predict(fitlm2, new)
+predict(fitlm2, new, interval="confidence")
+predict(fitlm2, new, interval="prediction")
+plot(Auto$cylinders, Auto$mpg)
+abline(fitlm2, col="red")
+par(mfrow=c(2,2))
+plot(fitlm1)
+
+fitlm1 <- lm(mpg ~ cylinders, data=Auto)
+summary(fitlm1)
+new <- data.frame(cylinders = 10)
+predict(fitlm1, new)
+predict(fitlm1, new, interval="confidence")
+predict(fitlm1, new, interval="prediction")
+plot(Auto$cylinders, Auto$mpg)
+abline(fitlm1, col="red")
+par(mfrow=c(2,2))
+plot(fitlm1)
+```
+
+
+
+
+

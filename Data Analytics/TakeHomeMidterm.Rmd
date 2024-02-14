@@ -1,0 +1,228 @@
+---
+title: "TakeHomeMidterm"
+author: "Vikas Sanil"
+date: "Due 3/11 11:59 pm"
+output:
+  pdf_document: default
+  '': default
+header-includes:
+- \usepackage{float}
+- \floatplacement{figure}{H}
+fig_cap: yes
+keep_tex: yes
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+***>> Do not distribute outside of ITMD/ITMS/STAT 514, SPRING 2022, Illinois Tech. <<***
+
+---
+
+#  Instructions & Rules 
+
+
+
+Use this Markdown document as your working copy of the exam, and edit it. Please use output option `pdf_document` or `html_document`. 
+
+* *Questions and Points* 
+
+This test has **FOUR** questions. Attempt them all. The maximum number of points is
+**45**. 
+
+*  *Some standard writing considerations:*
+   * Replace comments that instruct you to put code with your own code.
+   * Ensure your plots and output are visible and readable.
+   * Ensure you've typed up an explanation of your answers wherever required. 
+
+* *Format*: delete comments and replace with your answers and code. Do not just place code, execute it, and expect the reader to be able to interpret the answer for themselves. Type a sentence saying what you just computed and what the reader should understand. 
+* *Name*: do not forget to put your name on the exam under the 'author' heading.
+* *Submission*: your submission must consist of your copy of this Markdown document *and* a knitted `pdf` file (or save a knitted `html` as a `pdf`). Any other type of submission will receive no credit and no opportunity for a re-submission. Late submissions are not accepted. 
+
+
+### Honor code
+
+> I will not give or receive information to or from any other persons during this midterm. 
+This document was edited and PDF knitted by me alone.
+
+*[Vikas Sanil]*
+
+-----
+
+#  Getting started 
+
+
+Load the packages you will need for your code to run. Probably you need at least these two, but add others if needed. 
+
+ *(These were used on  previous homework assignments, so you should not have to run the command `install.packages("....")`, but do run that first if `library` does not load.)* 
+
+```{r getting.packages,message=FALSE}
+# library("ggplot2")
+library("tidyverse") # includes tibbles, ggplot2, dyplr, and more. 
+library("scales")
+```
+
+In addition, I'd like to ask `R` to print decimal numbers with 2 digits:
+```{r}
+options(scipen=2)
+```
+
+# Obtaining and Understanding the Data
+
+For this exam, we will be using the cybersecurity breach report data downloaded 2015-02-26 from the US Health and Human Services. 
+
+To understand what the data represents, here is some information from the *Office for Civil Rights* of the  *U.S. Department of Health and Human Services*: 
+
+* "As required by section 13402(e)(4) of the HITECH Act, the Secretary must post a list of breaches of unsecured protected health information affecting 500 or more individuals. 
+* "Since October 2009 organizations in the U.S. that store data on human health are required to report any incident that compromises the confidentiality of 500 or more patients / human subjects (45 C.F.R. 164.408). These reports are publicly available. Our data  set  was downloaded from the Office for Civil Rights of the U.S. Department of Health and Human Services, 2015-02-26."  
+
+Load  this data set and save it as `cyberData`,  using the following code: 
+
+```{r}
+cyberData<-read.csv(url("https://vincentarelbundock.github.io/Rdatasets/csv/Ecdat/HHSCyberSecurityBreaches.csv"))
+```
+
+## Data Exploration
+
+### Question 1. (5 points)
+Check the structure of the data using the `str` command. What type of object is `cyberData`?  How many observations are recorded?
+How  many variables are recorded? 
+List all  of  the types of random variables that are  recorded based on the output (i.e. int/float etc.). 
+
+```{r}
+str(cyberData)
+```
+>**Answer:** *The data set is stored as a 'data.frame' with `r nrow(cyberData)` rows and `r ncol(cyberData)` columns. There are  `r nrow(cyberData)` observations of `r ncol(cyberData)`  variables.  All  of  the types of random variables are 
+`r typeof(cyberData$X)`, `r typeof(cyberData$State)` and `r typeof(cyberData$Business.Associate.Present)`.*
+
+
+
+  
+
+
+### Question 2. (20 points)
+
+Let us compare the number of affected individuals across some states. 
+
+* Extract the subset of the data for Kansas and Arkansas; in other words, the subset of the data for which `State` column equals `"KS"` or`"AR"`. Add a third state to the dataframe, say, Illinois (i.e., where `State == "IL"`). Name the new **dataframe** `threeStates`. 
+
+```{r}
+cyberData_StateKS<-data.frame(cyberData[cyberData$State=="KS",])
+cyberData_StateAR<-data.frame(cyberData[cyberData$State=="AR",])
+cyberData_StateKSnAR<-rbind(cyberData_StateKS, cyberData_StateAR)
+str(cyberData_StateKSnAR)
+cyberData_StateIL<-data.frame(cyberData[cyberData$State=="IL",])
+threeStates<-rbind(cyberData_StateKSnAR,cyberData_StateIL)
+str(threeStates)
+```
+
+
+* Create a boxplot of `Individuals.Affected` split across the three states. What conclusion can you draw from it?
+
+```{r out.width="50%"}
+boxplot(Individuals.Affected ~ State, data=cyberData_StateKSnAR, horizontal = TRUE )
+
+boxplot(Individuals.Affected ~ State, data=threeStates, horizontal = TRUE )
+```
+   
+>**Answer:** *From above plots we can see State IL has an outlier observation of Individuals.Affected of value `r max(cyberData_StateIL$Individuals.Affected)`, which is way too larger than maximum value reported in State KS(`r max(cyberData_StateKS$Individuals.Affected)`) and AR(`r max(cyberData_StateAR$Individuals.Affected)`).*
+
+The above plot should leave you wondering if Illinois is special, in that it contains some really large data breaches. Let's investigate: 
+
+* How many observations in `cyberData` represent a cyber security breach that affected 100,000 individuals or more? 
+
+```{r}
+str(cyberData[cyberData$Individuals.Affected >=100000,])
+```
+>**Answer:** *`r nrow(cyberData[cyberData$Individuals.Affected >=100000,])` observations in `cyberData` represent a cyber security breach that affected 100,000 individuals or more.* 
+
+* How many of those are in Illinois? 
+
+
+```{r}
+str(cyberData_StateIL[cyberData_StateIL$Individuals.Affected >=100000,])
+```
+>**Answer:**: *`r nrow(cyberData_StateIL[cyberData_StateIL$Individuals.Affected >=100000,])` observations are found in State IL where cyber security breach affected 100,000 individuals or more.*
+
+
+
+## Small analyses across time 
+
+Let us now compare attacks before and after 2013. The goal is to see if there is a significant difference in mean number of affected individuals. 
+
+### Question 3. (10 points)
+
+Check the type of the `Breach.Submission.Date` column: is it a numeric? What type is it? 
+```{r}
+typeof(cyberData$Breach.Submission.Date)
+is.numeric(cyberData$Breach.Submission.Date)
+```
+>**Answer:** *Breach.Submission.Date column is not numeric. The type of the `Breach.Submission.Date` column is `r typeof(cyberData$Breach.Submission.Date)`.*  
+
+Let us change it to a numeric and extract *the year only*. The code that does this is `as.numeric(format(as.Date(.....),"%Y"))`. Let us use this code to break up the data to before and after 2013, like this: 
+
+```{r}
+before2013 <- subset(cyberData, as.numeric(format(as.Date(Breach.Submission.Date),"%Y")) <=2013 )
+after2013  <- subset(cyberData, as.numeric(format(as.Date(Breach.Submission.Date),"%Y")) > 2013 )
+```
+
+
+How many observations are in each subset of the population? 
+
+>**Answer:** *Number of observations of breach before 2013 is `r nrow(before2013)`. And number of observations of breach after 2013 is `r nrow(after2013)`.*
+
+
+## Specific type of security breaches 
+
+### Question 4. (10 points)
+
+* What proportion of data entries in `cyberData` have `Type.of.Breach  == "Hacking/IT Incident"` ? 
+
+```{r}
+HIT_incident1<-nrow(cyberData[cyberData$Type.of.Breach== "Hacking/IT Incident",])
+Overall_incident1<-nrow(cyberData)
+proportion1<-percent(HIT_incident1/Overall_incident1, accuracy = 0.01)
+```
+
+>**Answer:** *The proportion of data entries in `cyberData` which has `Type.of.Breach  == "Hacking/IT Incident"` is `r proportion1`.*
+
+* What proportion of data entries in `before2013` have `Type.of.Breach  == "Hacking/IT Incident"` ?  
+
+```{r}
+HIT_incident2<-nrow(before2013[before2013$Type.of.Breach== "Hacking/IT Incident",])
+Overall_incident2<-nrow(before2013)
+proportion2<-percent(HIT_incident2/Overall_incident2, accuracy = 0.01)
+barplot(table(before2013$Type.of.Breach))
+```
+
+>**Answer:** *The proportion of data entries before 2013 which has `Type.of.Breach  == "Hacking/IT Incident"` is `r proportion2`.*
+
+* What proportion of data entries in `after2013` have `Type.of.Breach  == "Hacking/IT Incident"` ?  
+
+```{r}
+HIT_incident3<-nrow(after2013[after2013$Type.of.Breach== "Hacking/IT Incident",])
+Overall_incident3<-nrow(after2013)
+proportion3<-percent(HIT_incident3/Overall_incident3, accuracy = 0.01)
+```
+
+>**Answer:** *The proportion of data entries after 2013 which has `Type.of.Breach  == "Hacking/IT Incident"` is `r proportion3`.*
+
+
+
+-------- 
+
+# End of midterm, congratulations! 
+
+--------
+
+
+*>> Do not distribute outside of ITMD/ITMS/STAT 514, SPRING  2022, Illinois Tech. <<*
+
+------- 
+

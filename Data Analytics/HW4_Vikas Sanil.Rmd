@@ -1,0 +1,268 @@
+---
+title: "HW4_Vikas Sanil"
+author: "Vikas Sanil"
+date: "Due Date 3/30"
+output:
+  pdf_document: default
+  '': default
+header-includes:
+- \usepackage{float}
+- \floatplacement{figure}{H}
+fig_cap: yes
+keep_tex: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,comment = '', fig.width = 5, fig.height = 5
+  )
+```
+
+##  Packages
+
+```{r message=FALSE}
+library("tigerstats")
+```
+
+
+
+# Part ONE: Review the approach to location and scale problems for one and two populations (6 points, 2 points each question)
+
+* For inference on population mean, which of the following could we potentially use? *Choose all apply*
+
+
+ A. The normal distribution (with the Z statistic)
+ 
+ B. The t-distribution (with the T statistic)
+ 
+ C. The chi-square distribution (with the $\chi^2$ statistic)
+ 
+ D. The F-distribution (with the F statistic)
+
+>> Answer:  The normal distribution (with the Z statistic) when Standard Deviation of population is known and The t-distribution (with the T statistic) when Standard Deviation of population is not known.
+
+
+* For inference on population variance, which of the following distributions will be useful? 
+
+  A. normal
+  
+  B. $T$
+  
+  C. $\chi^2$
+  
+  D. $F$
+
+>> Answer: $\chi^2$
+
+* For comparing variances between two populations, which of the following distributions will be useful? 
+
+  A. normal
+  
+  B. $T$
+  
+  C. $\chi^2$
+  
+  D. $F$
+
+>> Answer: $F$
+
+# Part Two: Confidence Interval and Hypothesis Testing (30 points)
+
+**Problem 1.** An electrical firm manufactures light bulbs that have a length of life that is approximately normally distributed, with mean equal to 800 hours and a standard deviation of 40 hours. A random sample of 16 bulbs will have an average life of 775 hours. (15 points)
+
+We wish to test
+\begin{align*}
+H_0: \mu & = 800, \\
+H_1: \mu & \ne 800. 
+\end{align*}
+Will you reject $H_0$ suppose $\bar{X}=775$? Justify your answer.
+
+**Pro-tip**: You may use either R or Python or hand-calculations to answer the computational part of this question, however, you do need to--in any case--explain and justify your answer. 
+
+```{r}
+mu<-800
+sigma<-40
+n<-16
+xbar<-775
+
+zstats<-(xbar-mu)/(sigma/sqrt(n))
+zstats
+
+pnormGC(c(zstats,-zstats), region = "outside", graph=TRUE)
+```
+>> Answer: Reject $H_0$ since the z-score falls beyond 95% confidence interval and same can be seen in the graph.
+
+
+**Problem 2.Checking out some small data sets that come with R ** (15 points)
+
+In this problem, you will load and work with the `mtcars` data set in R.  
+
+Two data samples are independent if they come from unrelated populations and the samples does not affect each other. Here, we assume that the data populations follow the *normal distribution*.
+In the data frame column `mpg` (which stands for "miles per galon") of the data set `mtcars`, there are gas mileage data of various 1974 U.S. automobiles. Let's take a look: 
+
+```{r}
+ mtcars$mpg 
+```
+
+Meanwhile, another data column in `mtcars`, named `am`, indicates the transmission type of the automobile model (0 = automatic, 1 = manual):
+
+```{r}
+mtcars$am 
+```
+In particular, the gas mileage for manual and automatic transmissions are two independent data populations.
+
+Assume that the data in `mtcars` follows the normal distribution, let us look for whether the **difference between the mean gas mileage** of manual and automatic transmissions seems to be statistically significant.
+
+a. Please construct a hypothesis test for ratio of the variances of these two populations. Then choose the appropriate test to make a conclusion.
+
+b. Based on the result in a), construct a hypothesis test for the means of these two populations. Show your conclusion.
+
+**Hints and shortcuts** 
+The gas mileage for automatic transmission can be listed as follows:
+
+```{r, fig.width = 2.5, fig.height = 2.5}
+L = mtcars$am == 0 
+ mpgAuto = mtcars[L,]$mpg 
+ mpgAuto                    # automatic transmission mileage
+```
+
+By applying the negation of L, we can find the gas mileage for manual transmission: 
+
+```{r}
+mpgManual = mtcars[!L,]$mpg 
+ mpgManual                  # manual transmission mileage 
+```
+
+Now you should be able to finish solving the problem. Enjoy! :) 
+
+```{r}
+var.test(mpgAuto,mpgManual)
+```
+>> Answer a: The ratio of variances is 0.3866 and p-value of 0.067. We can assume the variance are equal as it falls within 95% confidence interval. 
+I am performing two sample t-test with condition var.equal = TRUE since we are assuming that the data populations follow the *normal distribution*.
+The hypothesis being test:   
+$H_{0} : \mu_{auto} = \mu_{manual}$,<br>
+$H_{1} : \mu_{auto} \neq \mu_{manual}$
+
+```{r}
+t.test(mpgAuto,mpgManual, var.equal = TRUE, conf.level = .95)
+```
+>> Answer b: Rejecting $H_0$ since the probablity value is 0.000285 which is not within 95% confidence interval.
+
+# Part Three: Working With Data (60 points)
+
+Let's revisit  cybersecurity breach report data downloaded 2015-02-26 from the US Health and Human Services. 
+From the *Office for Civil Rights* of the  *U.S. Department of Health and Human Services*, I obtained the following information: 
+
+"As required by section 13402(e)(4) of the HITECH Act, the Secretary must post a list of breaches of unsecured protected health information affecting 500 or more individuals. 
+
+"Since October 2009 organizations in the U.S. that store data on human health are required to report any incident that compromises the confidentiality of 500 or more patients / human subjects (45 C.F.R. 164.408). These reports are publicly available. Our data  set  was downloaded from the Office for Civil Rights of the U.S. Department of Health and Human Services, 2015-02-26."  
+
+Load  this data set and store it as `cyberData`,  using the following code: 
+```{r}
+cyberData<-read.csv(url("https://vincentarelbundock.github.io/Rdatasets/csv/Ecdat/HHSCyberSecurityBreaches.csv"))
+```
+
+As you know, this data set contains *all* reports regarding health information data breaches from 2009 to 2015. Let's pretend this is just a *sample* from the population of *all data breaches*, related or not to health information. 
+
+### Question 1. (30 points)
+
+* Compare the number of individuals affected by data breaches (column `Individuals.Affected`) in two states, Arkansas (`State=="AR"`) and California (`State=="CA"`). 
+This can be done by performing a test of difference in means, for example. Assume the individuals affected follows an **approximately normal distribution**. (15 points)
+
+
+*Please note, in order to answer this question completely, you will need to run several lines of code, extract subsets of the data appropriately, run a statistical hypothesis test, and interpret the results. Draw a conclusion.  Partial answers to the question are insufficient.* 
+
+```{r}
+individualsAffected_AR = subset(cyberData, State=="AR")
+individualsAffected_CA = subset(cyberData, State=="CA")
+var.test(individualsAffected_AR$Individuals.Affected,individualsAffected_CA$Individuals.Affected)
+
+t.test(individualsAffected_AR$Individuals.Affected ,individualsAffected_CA$Individuals.Affected ,var.equal = FALSE ,conf.level = .95)
+
+
+boxplot(individualsAffected_AR$Individuals.Affected ,individualsAffected_CA$Individuals.Affected)
+```
+
+>> Answer:   
+- Since variance is unknown, I have ran var.test and found the variance is not equal for given data set and even mean is also not equal.   
+- Based on the test results and boxplot we can conclude the average individuals affected by data breach in State CA is greater than average individuals affected in State AR.
+
+
+* Repeat the same test for another pair of states, California ("CA") and Illinois ("IL").  (15 points)
+
+```{r}
+individualsAffected_IL = subset(cyberData, State=="IL")
+var.test(individualsAffected_CA$Individuals.Affected ,individualsAffected_IL$Individuals.Affected)
+
+t.test(individualsAffected_CA$Individuals.Affected ,individualsAffected_IL$Individuals.Affected ,var.equal = FALSE,conf.level = .95)
+
+boxplot(individualsAffected_CA$Individuals.Affected ,individualsAffected_IL$Individuals.Affected)
+```
+
+>> Answer:   
+- Since variance is unknown, I have ran var.test and found the variance is not equal for given data set and even mean is also not equal.   
+- Based on the test results and boxplot we can conclude the average individuals affected by data breach in State IL is greater than average individuals affected in State CA.  
+
+
+### Question 2. (30 points)
+
+Explore the variable `Type.Of.Breach` collected in this data set: 
+
+* What proportion of data entries in `cyberData` have `Type.of.Breach  == "Hacking/IT Incident"` ?  (6 points)
+
+```{r}
+numOfHITI<-length(which(cyberData$Type.of.Breach  == "Hacking/IT Incident"))
+prop1 <- numOfHITI / nrow(cyberData)
+prop1
+```
+
+>> Answer: `r prop1` proportion of data entries in 'cyberData' have 'Type.of.Breach  == "Hacking/IT Incident"'.
+
+* What are all the different values of `Type.Of.Breach` reported in the data set? How many are hacking/IT incidents? (6 points)
+
+```{r}
+typeOfBreach<-cyberData$Type.of.Breach
+numTypeofBreach<- length(unique(typeOfBreach))
+table(typeOfBreach)
+```
+
+>> Answer: `r numTypeofBreach` types of Breach reported in the data set. `r numOfHITI` are hacking/IT incidents.
+
+* What type of breach is reported in the 748th row of `cyberData`?  How about 349th row? Was row 349 counted in the proportion of Hacking/IT incident breaches you computed above? Why or why not? (8 points)
+
+```{r}
+breach748<-cyberData$Type.of.Breach[748]
+breach349<-cyberData$Type.of.Breach[349]
+tb. <- strsplit(typeOfBreach, ', ')
+table(unlist(tb.))
+
+```
+
+>> Answer: 
+- Row 748th has `r breach748` breach in cyberData.
+- Row 349th has `r breach349` breach in cyberData.
+- No row 349 was not counted in the proportion of Hacking/IT incident breaches computed above.
+- I was seraching for unique entry of Hacking/IT Incident breaches. Didn't account the combination of multiple breaches.
+
+
+* Perform a hypothesis test on whether there is a difference in proportion of Hacking/IT incidents between the state of Illinois and the state of California. Write your conclusion interpreting the results of the statistical test. (10 points)
+
+```{r}
+tb_IL<- strsplit(individualsAffected_IL$Type.of.Breach, ', ')
+tb_CA<- strsplit(individualsAffected_CA$Type.of.Breach, ', ')
+table(unlist(tb_IL))
+table(unlist(tb_CA))
+
+numOfHITI_IL <- 8
+numOfBreach_IL <- nrow(individualsAffected_IL)
+numOfHITI_CA <- 7
+numOfBreach_CA <- nrow(individualsAffected_IL)
+prop.test(x = c(numOfHITI_IL,numOfHITI_CA), n = c(numOfBreach_IL,numOfBreach_CA), alternative = "greater", conf.level = 0.95)
+
+```
+
+>> Answer: Based on p-value 0.5 we can say proporition of Hacking/IT incidents in State IL is equal to State CA. 
+
+

@@ -1,0 +1,170 @@
+---
+title: "InClassEx7"
+author: "Vikas"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#In-class Exercise: CI on μ1−μ2 with known σ1 and σ2
+
+```{r}
+n1<-50
+sigma1<-3
+x1<-rnorm(50, mean=3, sd=3)
+x1bar<- mean(x1)
+n2<-75
+sigma2<-4
+x2<-rnorm(75, mean=2, sd=4)
+x2bar<- mean(x2)
+alpha<-0.05
+standardError<-sqrt(sigma1^2 /n1 + sigma2^2/n2)
+
+lowerBound <- x1bar-x2bar - qnorm(1-alpha/2)*standardError
+
+lowerBound
+
+upperBound <- x1bar-x2bar + qnorm(1-alpha/2)*standardError
+upperBound
+
+```
+
+In-class Exercise A: CI on μ1−μ2
+with unknown σ1=σ2
+
+    Generate 50 normal random numbers with μ1=3
+
+and σ1=3 and get the sample mean x1
+
+. Hint: rnorm
+
+Generate 75 normal random numbers with μ2=2
+and σ2=3 and get the sample mean x2
+
+Please construct a 95% confidence interval on μ1−μ2
+suppose we only know σ1=σ2
+
+    .
+
+Hint: You can use t-test directly.
+
+```{r}
+
+n1<-50
+sigma1<-3
+x1<-rnorm(50, mean=3, sd=3)
+x1bar<- mean(x1)
+n2<-75
+sigma2<-4
+x2<-rnorm(75, mean=2, sd=3)
+x2bar<- mean(x2)
+alpha<-0.05
+
+t.test(x1, x2, var.equal=TRUE, conf.level=.95)
+```
+
+In-class Exercise B: CI on μ1−μ2
+with unknown σ1=σ2
+
+Let’s play with iris data set. We want to compare the population mean of Sepal.Length between Setosa and Virginica. Suppose we know these two species have the same variance. Can you construct a confidence interval on μvirginica−μsetosa
+
+with 95% confidence?
+Note: If the population variances are unknow but different, you still can use t.test to construct the confidence interval on μ1−μ2
+with var.equal = FALSE. In this case, the degree of freedoms is no longer an integer.
+
+```{r}
+setosaL<-iris$Sepal.Length[iris$Species=="setosa"]
+VirginicaL<-iris$Sepal.Length[iris$Species=="virginica"]
+t.test(VirginicaL, setosaL, var.equal=TRUE, conf.level=.95)
+
+```
+```{r}
+setosaL2<-iris$Sepal.Length[iris$Species=="setosa"]
+VirginicaL2<-iris$Sepal.Length[iris$Species=="virginica"]
+t.test(VirginicaL2, setosaL2, var.equal=FALSE, conf.level=.95)
+
+```
+
+
+
+
+
+```{r}
+setosaW<-iris$Sepal.Width[iris$Species=="setosa"]
+VirginicaW<-iris$Sepal.Width[iris$Species=="virginica"]
+t.test(VirginicaW, setosaW, var.equal=FALSE, conf.level=.95)
+
+```
+
+```{r}
+
+n <- 24 # sample size is large enough
+x <- 20
+phat <- x/n
+sigma <- sqrt((1-phat)*phat/n)
+alpha <- 0.05
+loBound <- phat - qnorm(1-alpha/2)*sigma
+loBound
+
+upBound <- phat + qnorm(1-alpha/2)*sigma
+upBound
+```
+
+```{r}
+
+n <- 24 # sample size is large enough
+x <- 12
+phat <- x/n
+sigma <- sqrt((1-phat)*phat/n)
+alpha <- 0.05
+loBound <- phat - qnorm(1-alpha/2)*sigma
+loBound
+
+upBound <- phat + qnorm(1-alpha/2)*sigma
+upBound
+```
+```{r}
+
+n <- 24 # sample size is large enough
+x <- 06
+phat <- x/n
+sigma <- sqrt((1-phat)*phat/n)
+alpha <- 0.05
+loBound <- phat - qnorm(1-alpha/2)*sigma
+loBound
+
+upBound <- phat + qnorm(1-alpha/2)*sigma
+upBound
+```
+
+```{r}
+
+n <- 240 # sample size is large enough
+x <- 06
+phat <- x/n
+sigma <- sqrt((1-phat)*phat/n)
+alpha <- 0.05
+loBound <- phat - qnorm(1-alpha/2)*sigma
+loBound
+
+upBound <- phat + qnorm(1-alpha/2)*sigma
+upBound
+```
+
+```{r}
+n1<-1000
+n2<-1500
+p1<-70/n1
+p2<-100/n2
+se<-sqrt((p1*(1-p1))/n1+(p2*(1-p2))/n2)
+alpha<-0.05
+loBound<-p1-p2-qnorm(1-alpha/2)*se
+loBound
+
+hiBound<-p1-p2+qnorm(1-alpha/2)*se
+hiBound
+```
+

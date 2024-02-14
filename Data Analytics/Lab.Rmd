@@ -1,0 +1,21 @@
+---
+title: "Lab"
+author: "Vikas"
+date: "4/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+seoulBikeData<-read.csv(url("https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv"))
+ggplot(data = seoulBikeData) +
+  geom_bar(mapping = aes(x = Rented.Bike.Count))
+
+
+
+qplot(seoulBikeData$Rented.Bike.Count)
+```

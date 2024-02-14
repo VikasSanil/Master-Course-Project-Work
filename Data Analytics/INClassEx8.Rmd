@@ -1,0 +1,86 @@
+---
+title: "InClassEx8"
+author: "Vikas"
+date: "2/23/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tigerstats)
+library(stats)
+library(reticulate)
+```
+
+```{r}
+pbinomGC(10,region = "above", size = 100, prob = 0.1, graph = TRUE)
+```
+
+
+In class Exercise: 
+<br>
+1.Ho u =1.5 h1 u<1.5
+<br>
+2. Ho u =.6 h1!=.6
+
+```{r}
+station1<-c(5030, 13700, 10730, 11400, 860, 2200, 4250, 15040, 4980, 11910, 8130, 26850, 17660, 22800, 1130, 1690)
+station2<-c(2800, 4670, 6890, 7720, 7030, 7330, 2810, 1330, 1230, 2130, 2190)
+
+t.test(station1,station2, var.equal=FALSE, conf.level=0.95)
+
+
+
+xhat <- 70
+num <- 100
+phat <- xhat/num
+p0 <- 0.6
+zvalue <- (phat-p0)/(sqrt(p0*(1-p0)/num))
+zvalue
+
+prop.test(x=xhat, n = num, p= p0, alternative = "greater", conf.level = 0.95)
+pbinomGC(xhat,region = "above", size = num, prob = p0,graph = TRUE)
+```
+
+```{r}
+
+n<-length(iris$Sepal.Length)
+ssquare<-var(iris$Sepal.Length)
+
+alpha<-0.1
+
+lobd<-(n-1)*ssquare/qchisq(1-alpha/2,n-1)
+lobd
+
+upbd<-(n-1)*ssquare/qchisq(alpha/2,n-1)
+upbd
+
+```
+
+```{r}
+n1<-length(iris$Sepal.Length[iris$Species == "setosa"])
+n1
+n2<-length(iris$Sepal.Length[iris$Species == "virginica"])
+n2
+ssquare1<-var(iris$Sepal.Length[iris$Species == "setosa"])
+ssquare2<-var(iris$Sepal.Length[iris$Species == "virginica"])
+alpha<-0.04
+
+loBd <- ssquare1/ssquare2/qf(1-alpha/2, n1-1, n2-1)
+upBd <- ssquare1/ssquare2/qf(alpha/2, n1-1, n2-1)
+
+loBd
+upBd
+
+```
+
+```{r}
+t.test(len~supp, data=ToothGrowth, var.equal=TRUE)
+```
+
+
+
+

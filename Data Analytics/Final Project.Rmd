@@ -1,0 +1,427 @@
+---
+title: "ITMD 514 Final Project - Team 7"
+author: "Jui Dalal, Vikas Sanil"
+date: "Submitted on 4/27/2022"
+runtime: shiny
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(
+  echo = TRUE,comment = '',
+  fig.align = 'center',
+  out.width = "70%"
+  )
+```
+
+```{r Library, echo=TRUE}
+library(tidyverse)
+library(ggplot2)
+library(yarrr)
+library(gridExtra)
+library(MASS)
+library(MLmetrics)
+require(ISLR)
+#library(scales)
+```
+
+
+# Introduction:
+
+We have selected Seoul Bike Sharing Demand Data from UCI Machine Learning Repository for our final Project. The data is captured between Dec 01, 2017 to Nov 30, 2018.
+Source: URL: https://archive.ics.uci.edu/ml/datasets/Seoul+Bike+Sharing+Demand
+   
+Currently Rental bikes are introduced in many urban cities for the enhancement of mobility comfort. It is important to make the rental bike available and accessible to the public at the right time as it lessens the waiting time and promotes mass transport instead of private transport. This is very crucial at present as fossil fuel price are high and earth is warming up faster.   
+   
+Eventually, providing the city with a stable supply of rental bikes becomes a major concern.
+The crucial part is the prediction of bike count required at each hour for the stable supply of rental bikes. The dataset contains weather information (Temperature, Humidity, Windspeed, Visibility, Dewpoint, Solar radiation, Snowfall, Rainfall), the number of bikes rented per hour and date information.   
+   
+# Data Preperation
+
+```{r DataPreperation, echo=TRUE}
+seoulBikeData<-read.csv(url("https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv"))
+str(seoulBikeData)
+seoulBikeData<-mutate(seoulBikeData, Weekday=format(as.Date(Date),"%A"), Date=as.Date(Date, "%d/%m/%Y"))
+colnames(seoulBikeData)<-c("Date", "RentedBikeCount", "Hour", "TemperatureC", "Humidity", "WindSpeedms", "Visibility10m", "DewPointTempC", "SolarRadiationMJm2", "Rainfallmm", "Snowfallcm", "Seasons", "Holiday", "FunctioningDay", "Weekday")
+str(seoulBikeData)
+dimensionNames<-c("Observation", "Attributes")
+dimensionValues<-dim(seoulBikeData)
+dimension<-matrix(data=c(dimensionNames,dimensionValues), nrow=2, ncol = 2)
+missingValues<-sum(is.na(seoulBikeData))
+duplicatedValues<-sum(duplicated(seoulBikeData))
+summary(seoulBikeData)
+holidaySeoulBikeRented<-seoulBikeData[seoulBikeData$Holiday=="Holiday",]
+noHolidaySeoulBikeRented<-seoulBikeData[seoulBikeData$Holiday=="No Holiday",]
+funcDaySeoulBikeRented<-seoulBikeData[seoulBikeData$FunctioningDay=="Yes",]
+nonFuncSeoulBikeRented<-seoulBikeData[seoulBikeData$FunctioningDay=="No",]
+rainfallSeoulBikeRented<-seoulBikeData[seoulBikeData$Rainfallmm > 0,]
+snowfallSeoulBikeRented<-seoulBikeData[seoulBikeData$Snowfallcm > 0,]
+holidayDate<- unique(holidaySeoulBikeRented$Date)
+holidayName<- c("December Solstice","Christmas Eve","Christmas", "New Year's Eve", "New Year's Day", "Seollal", "Seollal", "Seollal", "Independence Movement Day", "Children's Day", "Buddaha's Birthday", "Memorial Day", "National Libeartion Day of Korea", "Chuseok","Chuseok","Chuseok", "National Foundation Day", "Hangeul Proclamation Day")
+holidayList<-data.frame(holidayDate,holidayName)
+colnames(holidayList)<- c("Holiday Date", "Holiday Name")
+```
+
+## Output of data preperation
+
+`r knitr::kable(dimension)`   
+Number of Missing values `r missingValues`.   
+Number of duplicated value `r duplicatedValues`.   
+   
+Attribute Information:   
+Date : year-month-day(Data was in Character type, we have converted it to Date type for processing purpose)   
+Rented Bike count - Count of bikes rented at each hour   
+Hour - Hour of the day   
+Temperature-Temperature in Celsius   
+Humidity - %   
+Windspeed - m/s   
+Visibility - 10m   
+Dew point temperature - Celsius   
+Solar radiation - MJ/m2   
+Rainfall - mm   
+Snowfall - cm   
+Seasons - Winter, Spring, Summer, Autumn   
+Holiday - Holiday/No holiday   
+Functional Day - NoFunc(Non Functional Hours), Fun(Functional hours)
+Weekday - Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+   
+We are considering $RentedBikeCount$ as our $response/output$ in Seoul Bike Sharing Demand data set.   
+   
+# Data Exploration:   
+
+```{r Plot1, echo=TRUE}
+hist(seoulBikeData$RentedBikeCount)
+qplot(RentedBikeCount, data=seoulBikeData, bins=30)
+```
+Barchart shows how the frequency of Renal Bikes is counted. There is a more frequency for the less count of Rental Bikes compared to the less frequency for the higher count of Rental Bikes. It's more Skewed to the left of the graph.   
+  
+
+```{r Plot2, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = RentedBikeCount,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = RentedBikeCount))
+```
+Scatter plot represents the Rental Bike counts compared against Date with Seasons colored. As we see here the plots are almost normal from April to October.
+It shows there is a high amount of Bikes Rented out in summer/ during June-July compared to January. As we can see January has a low count due to winter or snow. Whereas counts for Spring, Summer, and Fall are distributed normally because of high demand with good weather. 
+
+```{r Plot3, echo=TRUE}
+knitr::kable(holidayList)
+ggplot(data = holidaySeoulBikeRented) +
+  geom_point(mapping = aes(x = Date, y = RentedBikeCount,colour = factor(Hour)))
+```
+Holiday Rented Bike: This scatter plot shows the count of rental bikes on Holidays. During the holidays Autumn season has a max count of bike rentals, Average count of bike rentals in Spring and Summer while during the winter it has very few counts. 
+   
+```{r Plot4, echo=TRUE}
+
+ggplot(data = noHolidaySeoulBikeRented) +
+  geom_point(mapping = aes(x = Date, y = RentedBikeCount,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = RentedBikeCount))
+```
+No Holiday Rented Bike Data:  This scatter plot represents the Rental Bike counts compared against Date with Seasons colored. As we see here the plots are similar to regular data. During No Holidays people would prefer to rent less bikes compared to holidays. 
+Although the graph shows the normally distributed count from April to Oct while January has low counts. It shows the graph is skewed to right.  
+
+```{r Plot5, echo=TRUE}
+# Plot 5
+layout(mat = matrix(c(2, 1, 0, 3), 
+                        nrow = 2, 
+                        ncol = 2),
+       heights = c(1, 2),    # Heights of the two rows
+       widths = c(2, 1))     # Widths of the two columns
+
+# Sub Plot 1: Scatterplot
+par(mar = c(5, 4, 0, 0))
+plot(x = seoulBikeData$Hour, 
+     y = seoulBikeData$RentedBikeCount,
+     xlab = "Hour", 
+     ylab = "Rented Bike Count", 
+     pch = 16, 
+     col = yarrr::piratepal("pony", trans = .7))
+
+# Sub Plot 2: Top (height) boxplot
+par(mar = c(0, 4, 0, 0))
+boxplot(seoulBikeData$Hour, xaxt = "n",
+        yaxt = "n", bty = "n",
+        col = "white", frame = FALSE, horizontal = TRUE)
+
+# Sub Plot 3: Right (weight) boxplot
+par(mar = c(5, 0, 0, 0))
+boxplot(seoulBikeData$RentedBikeCount, xaxt = "n",
+        yaxt = "n", bty = "n", 
+        col = "white", frame = FALSE)
+```
+Source: https://bookdown.org/ndphillips/YaRrr/arranging-plots-with-parmfrow-and-layout.html   
+
+The scatter plot shows how many bikes are rented each Hour. We can see bikes are rented higher in the evening compared to early morning. Maybe the reason for this is that the people would like to enjoy the evening ride when they have to do Other chores like grocery shopping, meeting friends or family, attend after-school/work classes.
+
+```{r Plot6, echo=TRUE}
+ggplot(seoulBikeData, aes(Hour,RentedBikeCount))+
+  geom_hex()
+```
+From above Hexagonal heatmap, we can see the more number of Bike rented out is around morning hours. This is probably due to Bike usage year around for work commute.
+
+```{r Plot7, echo=TRUE}
+
+ggplot(data = seoulBikeData, aes(x = Weekday, y = RentedBikeCount)) +
+  geom_point(mapping = aes(colour = factor(Hour) ))+
+  scale_x_discrete(limits=c("Sunday","Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+```
+We can observe in this scatter plot, in which Hour is colored that the Bike usage in early morning hours is almost the same.This shows the number of Bike usage for work commute(7,8,18,and 19 are on the top) is high compared to leisure usage.  
+
+
+```{r Plot8, echo=TRUE}
+ggplot(data = funcDaySeoulBikeRented) +
+  geom_point(mapping = aes(x = Date, y = RentedBikeCount,colour = factor(Hour)))+
+  geom_smooth(mapping = aes(x = Date, y = RentedBikeCount))
+```
+This is scatter plot showing the Rented Bike Count against Date with Hours colored. We can see from this the Bike usage is more during work hours than the leisure hour.  
+
+
+```{r Plot9, echo=TRUE}
+# Plot 8
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = TemperatureC, y = RentedBikeCount))
+```
+This Heatmap shows how many counts of rental bikes are counted as per the temperature. There is less bikes rented during the low temperature and has more bikes rented during the higher temperature. So as the temperature increases the bike usage increases. We can see the count of rented bike is high in lower temperature. This is due to addition of seasons where temperature is low.
+
+```{r Plot10, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = TemperatureC,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = TemperatureC))
+```
+
+
+```{r Plot11, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = Visibility10m, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per the visibility. If there is better visibility, the count of rental bikes increases to max whereas the lower visibility has decreased the count of rental bikes almost to zero. 
+```{r Plot12, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = Visibility10m,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = Visibility10m))
+```
+
+```{r Plot13, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = WindSpeedms, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Wind Speed. If there is high wind speed, it would be low or decrease the count of rental bikes. When there is low Wind Speed or zero, it increases the count of rental bikes to the max. 
+```{r Plot14, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = WindSpeedms,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = WindSpeedms))
+```
+```{r Plot15, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = Humidity, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Wind Speed. If there is high wind speed, it would be low or decrease the count of rental bikes. When there is low Wind Speed or zero, it increases the count of rental bikes to the max. 
+```{r Plot16, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = Humidity,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = Humidity))
+```
+```{r Plot17, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = DewPointTempC, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Dew Point. If there is high dew point, it would be low or decrease the count of rental bikes. When there is medium dew point, it increases the count of rental bikes to the max. 
+```{r Plot18, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = DewPointTempC,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = DewPointTempC))
+```
+```{r Plot19, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = SolarRadiationMJm2, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Solar radiation. If there is high solar radiation, it would be low or decrease the count of rental bikes. When there is low Solar radiation or zero, it increases the count of rental bikes to the max. 
+```{r Plot20, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = SolarRadiationMJm2,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = SolarRadiationMJm2))
+```
+```{r Plot21, echo=TRUE}
+ggplot(data = rainfallSeoulBikeRented) +
+  geom_bin2d(mapping = aes(x = Rainfallmm, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Rainfall. If there is high Rainfall, it would be low or decrease the count of rental bikes. When there is low Rainfall or zero, it increases the count of rental bikes to the max. 
+```{r Plot22, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = Rainfallmm,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = Rainfallmm))
+
+```
+```{r Plot23, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_bin2d(mapping = aes(x = Snowfallcm, y = RentedBikeCount))
+```
+This Heatmap represents how many counts of bikes are rented as per Snowfall. If there is high Snowfall, it would be low or decrease the count of rental bikes. When there is low Snowfall or zero, it increases the count of rental bikes to the max. 
+```{r Plot24, echo=TRUE}
+ggplot(data = seoulBikeData) +
+  geom_point(mapping = aes(x = Date, y = Snowfallcm,colour = Seasons))+
+  geom_smooth(mapping = aes(x = Date, y = Snowfallcm))
+```
+
+```{r Plot25, echo=TRUE}
+ggplot(data = seoulBikeData, mapping = aes(x = Weekday , y = RentedBikeCount)) +
+  geom_boxplot()+scale_x_discrete(limits=c("Sunday","Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+```
+The boxplot represents the Bikes Rented out on weekdays. The mean of Rented Bike Count is around same value for all week days.
+
+```{r Plot26, echo=TRUE}
+ggplot(data = seoulBikeData, mapping = aes(x = Seasons, y = RentedBikeCount)) +
+  geom_boxplot()+scale_x_discrete(limits=c("Winter","Spring","Summer", "Autumn"))
+```
+Boxplot data on how many bikes are rented as per the season. There's a less count of bikes rented in Winter compared to Spring, Summer, and Fall. As we have already seen this is due to the temperature drop during winter.
+
+```{r Plot27, echo=TRUE}
+ggplot(data = seoulBikeData, mapping = aes(x = Holiday, y = RentedBikeCount)) +
+  geom_boxplot()
+```
+The boxplot represents  how many bikes are rented on Holiday and No Holiday. There are more or high count of rental bikes on no Holiday, this shows the Bike usage is less during Holidays and people prefer using personal commute rather than mass commute.   
+
+
+# Data Analysis:
+
+## Hypothesis Testing of Holiday and NoHoliday data in Seoul Bike Sharing Data:
+
+We are using t test to compare mean, as we don’t know the variance for Rented Bike data.  
+We are conducting an F test first to see if they have the same variance.  
+
+The hypothesis tested:  
+$H_0:\sigma^2_{No Holiday}/\sigma^2_{Holiday} = 1$   
+$H_1:\sigma^2_{No Holiday}/\sigma^2_{Holiday} \ne 1$  
+
+```{r Data Analysis-Hypothesis Testing}
+
+var.test(noHolidaySeoulBikeRented$RentedBikeCount, holidaySeoulBikeRented$RentedBikeCount)
+
+```
+Based on the results, we know the variance are quite different, we are doing t-test with different variances.
+
+The hypotheis test is   
+$H_0: \mu_{No Holiday}-\mu_{Holiday} = 0,$   
+$H_1: \mu_{No Holiday}-\mu_{Holiday} \ne 0$
+```{r}
+t.test(noHolidaySeoulBikeRented$RentedBikeCount,  holidaySeoulBikeRented$RentedBikeCount,  var.equal = FALSE)
+```
+Based on the results, we know the mean are quite different, so we have to reject null hypothesis and accept alternative.
+
+From above hypothesis results we can conclude that the Bike rental is higher during no holiday dates rather than holiday.
+
+
+## Regression analysis:
+
+### Simple Linear regression test:
+
+```{r Data Analysis-Regression test 1}
+fitlm1<-lm(RentedBikeCount~Hour, data=funcDaySeoulBikeRented)
+summary(fitlm1)
+par(mfrow=c(2,2))
+plot(fitlm1)
+```
+
+## Predicted Rented Bike Count when Hour of the day is 18:00  
+```{r Data Analysis-Regression test 2}
+newHour<-data.frame(Hour = 18)
+predict(fitlm1,newHour, interval="confidence")
+predict(fitlm1,newHour, interval="prediction")
+
+fitlm2<-lm(RentedBikeCount~Date, data=funcDaySeoulBikeRented)
+summary(fitlm2)
+par(mfrow=c(2,2))
+plot(fitlm2)
+```
+
+## Predicted Rented Bike Count when Date is 02/05/2018 or 05/05/2018
+```{r Data Analysis-Regression test 3}
+newDate<-data.frame(Date = as.Date("02/05/2018", "%d/%m/%Y"))
+predict(fitlm2,newDate, interval="confidence")
+predict(fitlm2,newDate, interval="prediction")
+
+#Predicted Rented Bike Count when Date is 05/05/2018
+newDate<-data.frame(Date = as.Date("05/05/2018", "%d/%m/%Y"))
+predict(fitlm2,newDate, interval="confidence")
+predict(fitlm2,newDate, interval="prediction")
+```
+
+## Since Date, Seasons, Holiday, FunctioningDay and Weekday are no numeric and qualitative data. They are not considered in Regression Model.
+
+```{r}
+res<-cor(funcDaySeoulBikeRented[,2:11])
+round(res,2)
+pairs(res)
+
+```
+From correlation we can see only TemperatureC~DewPointTempC has greater than 0.7 value - 0.91.   
+
+```{r}
+
+i<-sample(2, nrow(funcDaySeoulBikeRented[,2:11]), replace = TRUE, prob = c(0.8,0.2))
+funcDaySeoulBikeRentedTraining<-funcDaySeoulBikeRented[i==1,]
+funcDaySeoulBikeRentedTest<-funcDaySeoulBikeRented[i==2,]
+
+```
+
+Peforming Forward Stepwise regression model:   
+```{r}
+
+#Forward Stepwise regression model
+#null model
+intercept_only<-lm(RentedBikeCount~ 1, data=funcDaySeoulBikeRentedTraining[, 2:11])
+#  full model
+all<-lm(RentedBikeCount~., data = funcDaySeoulBikeRentedTraining[, 2:11])
+# forward set-wise regression
+forward<- stepAIC(intercept_only, direction='forward', scope=formula(all))
+#results
+forward$anova
+summary(forward)
+#MAE and MSE calculation
+ypred_forward<-predict(object = forward, newdata=funcDaySeoulBikeRentedTest[, 2:11])
+MAE(y_pred = ypred_forward, y_true = funcDaySeoulBikeRentedTest$RentedBikeCount)
+MSE(y_pred = ypred_forward, y_true = funcDaySeoulBikeRentedTest$RentedBikeCount)
+
+```
+
+From result we can observe:    
+- MAE is 335.15   
+- MSE is 193164.1   
+   
+   
+   
+   
+Peforming Backward Stepwise regression model:   
+```{r}
+#Backward Stepwise regression model
+backward<- stepAIC(all, direction='backward')
+#results
+backward$anova
+summary(backward)
+#MAE and MSE calculation
+ypred_backward<-predict(object = backward, newdata=funcDaySeoulBikeRentedTest[,2:11])
+MAE(y_pred = ypred_backward, y_true = funcDaySeoulBikeRentedTest$RentedBikeCount)
+MSE(y_pred = ypred_backward, y_true = funcDaySeoulBikeRentedTest$RentedBikeCount)
+```
+From result we can observe:     
+- MAE is 335.15   
+- MSE is 193164.1  
+   
+   
+Comparing two models:   
+
+We see both model have same result.   
+```{r}
+#Compare Regression Model
+par(mfrow=c(2,2))
+plot(forward)
+par(mfrow=c(2,2))
+plot(backward)
+```
+
+
+
+
+

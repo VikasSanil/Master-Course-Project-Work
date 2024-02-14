@@ -1,0 +1,84 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+Sample mean $\bar{x} = \frac{1}{n} * \sum_{} x_{i}$
+
+Sample median $\bar{x} = x_{(n+1)/2}$ Odd, $\frac{1}{2}*( x_{n/2} + x_{(n/2)+1})$ Even.
+
+Sample variance $s^2 = \frac{\sum_{}(x_i - \bar{x})^2}{n-1}$
+
+Sample standard deviation $s = \sqrt{s^2}$
+
+Sample range $x_{max}-x_{min}$
+
+Population mean $\mu = \frac{\sum{}X}{N}$
+
+Population variance $\sigma^2 = \frac{\sum_{}(X_i - \mu)^2}{N}$
+
+Population standard deviation $\sigma = \sqrt{\sigma^2}$
+
+$0 \leq z_{-\frac{\alpha}{2}}\leq P(E) \leq z_{\frac{\alpha}{2}}\leq 1$
+
+$Z(Standard Normal Random Varaible) = \frac{x-\bar{x}}{s}\sim \mathcal{N}(0,1)$
+
+$P(a \leq X \leq b) = P(\frac{a-\mu}{\sigma}) \leq Z \leq \frac{b-\mu}{\sigma})$
+
+$Z(CLT) = \frac{x-\mu}{{\sigma}/{\sqrt{n}}}  when \ n \to \infty \ and \ Z \sim \mathcal{N}(0,1)$<br>
+Note: (n>30) and $\mu =\bar{x}$ and $\sigma = s\sqrt{n}$ or $\sigma^2 = s^2 n$
+
+When sample size increases, sample mean has a larger probability to close to population mean.
+
+$Z = \frac{(x_1-x_2)-(\mu_1 - \mu_2)}{\sqrt{\sigma_1^2/n_1 + \sigma_2^2/n_2}}$
+
+Confidence interval:
+$(\bar{x}-\frac{\sigma}{\sqrt{n}}z_{\alpha/2},\ \bar{x}+\frac{\sigma}{\sqrt{n}}z_{\alpha/2})$
+
+$(\bar{x_1}-\bar{x_2})-z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_1^2}{n_1}}<\mu_1-\mu_2<(\bar{x_1}-\bar{x_2})+z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_1^2}{n_1}}$
+
+**Variance Unknown: **  
+$\bar{x} = \frac{1}{n}\sum_{i=1}^{n} \ and \ S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2$
+
+$T = \frac{\bar{X}-\mu}{S/\sqrt{n}}$ and df $\upsilon = n-1$
+
+Confidence interval:
+$(\bar{x}-t_{\upsilon,\alpha/2}\frac{S}{\sqrt{n}})<\mu<\bar{x}+t_{\upsilon,\alpha/2}\frac{S}{\sqrt{n}})$
+
+$(\bar{x}_1-\bar{x}_2)-t_{\alpha/2}s_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}<\mu_1-\mu_2<(\bar{x}_1-\bar{x}_2)+t_{\alpha/2}s_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}$
+where, $s_p^2 =\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}$ and $\upsilon=n_1+n_2-2$
+
+**Confidence Interval Proportions**   
+$\hat{p}-z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}<p<\hat{p}+z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
+
+$(\hat{p_1}-\hat{p_2})-z_{\alpha/2}\sqrt{\frac{\hat{p_1}\hat{q_1}}{n_1}+\frac{\hat{p_2}\hat{q_2}}{n_2}}<p_1-p_2<(\hat{p_1}-\hat{p_2})+z_{\alpha/2}\sqrt{\frac{\hat{p_1}\hat{q_1}}{n_1}+\frac{\hat{p_2}\hat{q_2}}{n_2}}$ where $q_1=1-p_1$
+
+Important R functions to generate random numbers, pdf (aka pmf), cdf, and quantiles. The prefixes for these functions are:<br>
+- r: random number generation  
+- d: probability density function or probability mass function  
+- p: cumulative distribution function  
+- q: quantiles
+
+```{r out.width="50%", message=FALSE}
+par(mfrow = c(1,2))
+knitr::include_graphics("C:/Users/Vikas/Downloads/L Z Table.png")
+knitr::include_graphics("C:/Users/Vikas/Downloads/R Z Table.png")
+```
+```{r out.width="87%", message=FALSE}
+knitr::include_graphics("C:/Users/Vikas/Downloads/T Table.png")
+```
+
+
+
+
+
+
+
+
+                          

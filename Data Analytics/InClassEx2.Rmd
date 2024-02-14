@@ -1,0 +1,84 @@
+---
+title: "Class2Ex"
+author: "Vikas Sanil"
+date: "1/19/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r cars}
+summary(cars)
+var(iris$Sepal.Length)
+```
+
+
+```{r pressure, echo=FALSE}
+#Histogram of Petal Length with 10 bins
+hist(iris$Petal.Length, breaks = seq(0,7.9,l=11),col = "blue", main = "Histogram of Petal Length",xlab="Petal Length")
+
+#Histogram of Petal Length with 20 bins
+hist(iris$Petal.Length, breaks = seq(0,7.9,l=21),col = "blue", main = "Histogram of Petal Length",xlab="Petal Length")
+
+#Boxplot of Petal Length 
+boxplot(iris$Petal.Length, horizontal = TRUE)
+
+```
+
+#Box plot
+
+
+
+    first quartile (Q1/25th Percentile): the middle number between the smallest number (not the “minimum”) and the median of the dataset.
+
+    third quartile (Q3/75th Percentile): the middle value between the median and the highest value (not the “maximum”) of the dataset.
+
+    interquartile range (IQR): 25th to the 75th percentile.
+
+    “maximum”: Q3 + 1.5*IQR
+
+    “minimum”: Q1 -1.5*IQR
+
+```{r echo=FALSE}
+par(mfrow = c(1, 2))
+boxplot(iris$Sepal.Width)
+boxplot(iris$Sepal.Length)
+abline(h = min(iris$Sepal.Length), col = "Blue")
+abline(h = max(iris$Sepal.Length), col = "Yellow")
+abline(h = median(iris$Sepal.Length), col = "Green")
+abline(h = quantile(iris$Sepal.Length, c(0.25, 0.75)), col = "Red")
+```
+
+
+```{r carBatteries}
+carBatteries<-c(
+  2.2,4.1,3.5, 4.5, 3.2, 3.7, 3.0, 2.6, 3.4, 1.6, 3.1, 3.3, 3.8, 3.1, 4.7, 3.7, 2.5, 
+  4.3, 3.4, 3.6, 2.9, 3.3, 3.9, 3.1, 3.3, 3.1, 3.7, 4.4, 3.2, 4.1, 1.9, 3.4, 4.7, 
+  3.8, 3.2, 2.6, 3.9, 3.0, 4.2, 3.5
+)
+max(carBatteries)
+mean(carBatteries)
+var(carBatteries)
+sd(carBatteries)
+
+
+mean(carBatteries[carBatteries>3])
+var(carBatteries[carBatteries>3])
+sd(carBatteries[carBatteries>3])
+
+carBatteries[carBatteries>3]
+
+carBatteries>3
+
+carBatteries
+
+```
+
+```{r echo=FALSE}
+hist(carBatteries,seq(min(carBatteries), max(carBatteries), l = 31), col = "green")
+```

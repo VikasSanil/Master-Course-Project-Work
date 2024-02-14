@@ -1,0 +1,50 @@
+---
+title: "Final Project 2"
+author: "Vikas"
+date: "4/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r Data Preparation}
+#divvy<-read.csv("C:\\Users\\vikas\\Downloads\\Divvy_Trips(1).csv")
+#divvy<-mutate(divvy, Start=strptime(divvy$START.TIME, format = "%m/%d/%Y %I:%M:%S %p"), Stop=strptime(divvy$STOP.TIME, format = "%m/%d/%Y %I:%M:%S %p"))
+#divvy2019<-subset(divvy, as.numeric(format(Start,"%Y"))>2018)
+#divvy2019<-mutate(divvy2019, Duration=round((Stop-Start),2), Weekday=format(Start,"%A"), Month=format(Start, "%B"), Year=format(Start, "%Y"))
+#str(divvy2019)
+#write.csv(divvy2019, file ="C:\\Users\\vikas\\Desktop\\MSc\\514\\Divvy_Trips_2018_to_2022.csv" )
+
+divvy2019<-read.csv("C:\\Users\\vikas\\Desktop\\MSc\\514\\Divvy_Trips_2018_to_2022.csv")
+str(divvy2019)
+
+tab<-table(as.Date(divvy2019$Start))
+
+BikeCountDivvy2019<-data.frame(Date=(as.Date(names(tab))), BikeCount=as.vector(tab))
+
+n<-nrow(divvy2019)
+
+for(i in 1:n){
+  divvy2019$Bike.Count[i]<-BikeCountDivvy2019$BikeCount[BikeCountDivvy2019$Date[as.Date(divvy2019$Start[i])]]
+}
+
+str(divvy2019)
+
+```
+
+
+```{r}
+
+
+#ggplot(data = divvy, mapping = aes(x = Month)) + 
+ # geom_freqpoly(mapping = aes(colour = Year), bins = 30)
+```
+
