@@ -1,0 +1,116 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+What is Usability?
+- Efficient, Engaging, Easy to Learn, Error Tolerant, Effective   
+- Quality, Learn ability, Efficiency(Productivity), Memorability(Little "re-learning" required), Errors, Satisfaction(Pleasurable).
+
+
+User Experience
+-Emotion, Heritage, Fun, Style, Art, Branding, Reputation, Political, Social Personal Connections, Beyond just the device itself-"Service Design"   
+- Interaction Design, Information Architecture, Visual Design, Functionality, Usability Typography, User Interface, Content Strategy   
+
+Jakob Nielson -Usability Goals - Learn ability, Memorability, Efficiency, Satisfaction, Errors(Reducing and reporting)
+
+Don Norman - Design Principles - Visibility, Feedback, Constraints, Mapping, Consistency, Affordance.
+
+
+Affordance - Perceived and actual properties of the thing, primarily those fundamental properties that determine how the thing could possibly be used.
+
+Conceptual Model - Designer can help user foster an appropriate conceptual model in Appearance, instructions, behavior.
+
+Visibility - When capabilities are visible, it does not require memory of how to use.
+
+Mapping - Relationship between two objects, between control and action/result.
+
+Feedback - letting know what just occured.
+
+Constraints - Limitations on what can be done.
+
+Contextual Inquiry - A kind of Ethnographic or participatory design.
+
+Ethnographic - relating to the scientific description of peoples and cultures with their customs, habits, and mutual differences.
+
+Context - The interrelated conditions within which something occurs or exists.
+
+CI How to record?
+What the user says-in quotes
+what the user does - plain text
+Your interpretation - in parentheses
+
+CI Defining tasks - User decides task. Designer decide the focus.
+
+CI Test tasks: Representative of "real" tasks difficulty and coverage, tasks not frivilous or humorous or offensive, progressively harder. Remember not asking their opinions.
+
+Graphical Models --> Affinity Diagram-->Models--> 
+Flow Model, Social/Cultural Model, Artifact Model, Physical Model, Sequence/Step-by-step Model.
+
+Flow Model:
+- Circles and/or icons = people or groups by role
+- Boxes = things (artifacts), places, files, etc.
+- Arrows = flow
+- Red lightening bolts = breakdowns
+-  Times refer to time codes in video
+-  Could also refer to lines of a transcript
+- "(A)” = Assumption = interpretation
+Note: not for team-member's opinions about the UI - Instead (A) is for assumptions about what user did
+Note: you (interviewer) are never in any model
+
+Social Model:
+- Ovals for “Influencers”: individuals or groups, internal or external
+- Thought bubbles for feelings/concerns that they actually
+expressed
+- Arrows for direction of influence
+-  Labels for samples of dialog showing type of influence and attitudes -Worded as commands
+-  Also show “pushback” – influence in other direction
+- Breakdowns
+-  In relationships among people
+-  No need to repeat previously shown problems
+NOTE: Not allowed to make stuff up!: Just what you actually have data to support!
+
+
+User data drives innovation 
+- Solve problems (breakdowns) identified in models  - Grounded brainstorming
+Flow model: Eliminate flows, roles, redundant data entry
+Social / Cultural model: Increase communication, reinforce positive values
+Artifact model: Guide requirements, metaphors, remove screen problems
+Physical model: Depend only on what is available, reduce motion, improve flow of artifacts
+Sequence model: Eliminate, automate steps
+
+Usability Engineering - coined by John Bennett
+Steps
+1. Study the users and their tasks 
+2. Study the competition 
+3. Set usability goals
+4. Participatory Design 
+5. Coordinating the Total Interface for Consistency 
+    Include documentation, help, etc. 
+6. Guidelines and Heuristic Evaluation 
+    Evaluate your interface according to the 
+guidelines. 
+7. Make prototypes of the system early and quickly 
+8. Empirical testing 
+9. Iterative design with usability analysis
+10. Collect feedback from field use
+
+Fitts's Law - $t = a+b log_2(2\frac{D}{W})$
+• time is the amount of time required to complete the 
+movement
+• a is the human reaction time and 
+  b is the time needed by 
+human nervous system to process a bit of information
+• distance is a measurement from the starting point to the end 
+point (target object)
+• width is the width of the target object
+
+Weber's Law: $\frac{\Delta I}{I} = K$
+
+
